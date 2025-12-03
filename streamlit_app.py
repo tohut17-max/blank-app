@@ -63,7 +63,7 @@ st.header("② 특정 연도 기준 연령대별 비교")
 year = st.selectbox("연도 선택", sorted(tidy["year"].unique()))
 
 year_df = tidy[tidy["year"] == year]
-
+ 
 st.bar_chart(year_df, x="연령대", y="read_amount")
 
 st.write(f"선택한 연도 **{year}년** 기준의 연령대별 독서량입니다.")
