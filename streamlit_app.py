@@ -9,26 +9,21 @@ st.set_page_config(page_title="연령대별 독서량 시각화", layout="wide")
 # ---------------------------------------
 @st.cache_data
 def load_data():
-    df = pd.read_csv("clean_reading.csv")
+    df = pd.read_csv("clean_reading_utf8.csv", encoding="utf-8-sig")
     return df
 
 df = load_data()
 
 st.title("📚 연령대별 독서량 변화 (연도별 선그래프)")
 
-# 연령대 선택
 age_list = df["연령대"].unique()
 selected_age = st.selectbox("연령대를 선택하세요", age_list)
 
-# 선택된 연령대 데이터 필터
 row = df[df["연령대"] == selected_age].iloc[0]
 
 years = ["2013", "2015", "2017", "2019", "2021"]
 values = row[years].astype(float).values
 
-# ---------------------------------------
-# 선 그래프 그리기
-# ---------------------------------------
 fig, ax = plt.subplots(figsize=(8, 4))
 ax.plot(years, values, marker="o", linewidth=2)
 
