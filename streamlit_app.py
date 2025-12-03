@@ -1,11 +1,20 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 
 st.set_page_config(page_title="연령대별 독서량 시각화", layout="wide")
 
 # ---------------------------------------
-# 데이터 불러오기
+# 0. 한글 폰트 설정 (중요!)
+# ---------------------------------------
+# Mac: AppleGothic, Windows: Malgun Gothic, Linux/Streamlit Cloud: NanumGothic
+plt.rcParams['font.family'] = 'AppleGothic'   # Mac 사용 시
+plt.rcParams['axes.unicode_minus'] = False    # 마이너스 깨짐 방지
+
+
+# ---------------------------------------
+# 1. 데이터 로드
 # ---------------------------------------
 @st.cache_data
 def load_data():
@@ -24,6 +33,9 @@ row = df[df["연령대"] == selected_age].iloc[0]
 years = ["2013", "2015", "2017", "2019", "2021"]
 values = row[years].astype(float).values
 
+# ---------------------------------------
+# 2. 그래프
+# ---------------------------------------
 fig, ax = plt.subplots(figsize=(8, 4))
 ax.plot(years, values, marker="o", linewidth=2)
 
