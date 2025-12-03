@@ -9,7 +9,7 @@ st.set_page_config(page_title="연령대별 독서량 분석", layout="wide")
 # ---------------------------------------
 @st.cache_data
 def load_data():
-    df = pd.read_csv("final_data.csv", encoding="utf-8-sig")
+    df = pd.read_csv("final data.csv", encoding="utf-8-sig")
     return df
 
 df = load_data()
