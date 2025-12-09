@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-st.set_page_config(page_title="연령대별 독서 데이터 분석", layout="wide")
+st.set_page_config(page_title="Age Group Reading Dashboard", layout="wide")
 st.title("📚 Age Group Reading Dashboard")
 
 # ----------------------------------------------------------
@@ -16,7 +16,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 
 
 # ==========================================================
-# ① 2.csv — 전체 평균 독서량
+# ① 2.csv — Overall Reading Average
 # ==========================================================
 with tab1:
     st.header("Overall Reading Average by Age Group")
@@ -39,7 +39,7 @@ with tab1:
 
     fig.update_layout(
         hovermode="x unified",
-        xaxis_title="Age",
+        xaxis_title="Age Group",
         yaxis_title="Reading Amount"
     )
 
@@ -48,32 +48,32 @@ with tab1:
 
 
 # ==========================================================
-# ② 8.csv — 평일 / 휴일 "독서시간" 기준으로 수정
+# ② 8.csv — Weekday & Weekend Reading (Corrected Columns)
 # ==========================================================
 with tab2:
-    st.header("Weekday & Weekend Reading Time by Age Group")
+    st.header("Weekday & Weekend Reading Time")
 
     df = pd.read_csv("8.csv", header=2)
     df_age = df[df["통계분류(1)"] == "연령별"]
 
     ages = df_age["통계분류(2)"]
 
-    # ✔ 독서시간 컬럼 (중요!)
-    weekday_read = df_age["독서시간"]        # 평일 독서시간
-    weekend_read = df_age["독서시간.1"]      # 휴일 독서시간
+    # ✔ 실제 존재하는 컬럼명으로 수정
+    weekday_read = df_age["평일"]
+    weekend_read = df_age["휴일"]
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=ages, y=weekday_read,
                              mode="lines+markers",
-                             name="Weekday Reading"))
+                             name="Weekday"))
     fig.add_trace(go.Scatter(x=ages, y=weekend_read,
                              mode="lines+markers",
-                             name="Weekend Reading"))
+                             name="Weekend"))
 
     fig.update_layout(
         hovermode="x unified",
-        xaxis_title="Age",
-        yaxis_title="Reading Time (min)"
+        xaxis_title="Age Group",
+        yaxis_title="Reading Time"
     )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -81,10 +81,10 @@ with tab2:
 
 
 # ==========================================================
-# ③ 7.csv — 독서 방해 요인 도넛 차트
+# ③ 7.csv — Reading Barriers (Donut Chart)
 # ==========================================================
 with tab3:
-    st.header("Reading Barriers (Donut Chart)")
+    st.header("Reading Barriers by Age Group")
 
     df = pd.read_csv("7.csv", header=1)
     df_age = df[df["통계분류(1)"] == "연령별"]
@@ -109,7 +109,7 @@ with tab3:
 
 
 # ==========================================================
-# ④ 6.csv — 여가시간 중 독서 비율 (평일/주말)
+# ④ 6.csv — Share of Leisure Time Spent Reading
 # ==========================================================
 with tab4:
     st.header("Reading Share of Leisure Time")
@@ -119,21 +119,21 @@ with tab4:
 
     ages = df_age["통계분류(2)"]
 
-    # ✔ 비율 컬럼명(평일·주말)
+    # ✔ 실제 존재하는 컬럼명
     weekday_ratio = df_age["여가시간 중 독서시간이 차지하는 비율"]
     weekend_ratio = df_age["여가시간 중 독서시간이 차지하는 비율.1"]
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=ages, y=weekday_ratio,
                              mode="lines+markers",
-                             name="Weekday Ratio (%)"))
+                             name="Weekday Ratio"))
     fig.add_trace(go.Scatter(x=ages, y=weekend_ratio,
                              mode="lines+markers",
-                             name="Weekend Ratio (%)"))
+                             name="Weekend Ratio"))
 
     fig.update_layout(
         hovermode="x unified",
-        xaxis_title="Age",
+        xaxis_title="Age Group",
         yaxis_title="Share (%)"
     )
 
