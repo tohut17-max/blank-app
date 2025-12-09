@@ -2,11 +2,36 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from matplotlib import rc
 
-font_path = "NanumGothic.ttf"  # 프로젝트 폴더 안에 넣은 폰트 파일
-font = fm.FontProperties(fname=font_path).get_name()
-rc('font', family=font)
+# 사용 가능한 한글 폰트 자동 검색
+font_candidates = [
+    "NanumGothic",
+    "NanumGothicCoding",
+    "NanumMyeongjo",
+    "Malgun Gothic",
+    "AppleGothic",
+    "Arial Unicode MS",
+    "DejaVu Sans"
+]
 
-plt.rcParams['axes.unicode_minus'] = False
+available_fonts = fm.findSystemFonts()
+
+selected_font = None
+for font in font_candidates:
+    if any(font in f for f in available_fonts):
+        selected_font = font
+        break
+
+if selected_font:
+    rc("font", family=selected_font)
+else:
+    st.warning("⚠️ 시스템에 한글 폰트가 없어, 일부 텍스트가 □□로 표시될 수 있습니다.")
+
+plt.rcParams["axes.unicode_minus"] = False
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+from matplotlib import rc
+
+
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
