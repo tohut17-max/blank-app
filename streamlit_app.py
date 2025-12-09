@@ -1,3 +1,12 @@
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+from matplotlib import rc
+
+font_path = "NanumGothic.ttf"  # 프로젝트 폴더 안에 넣은 폰트 파일
+font = fm.FontProperties(fname=font_path).get_name()
+rc('font', family=font)
+
+plt.rcParams['axes.unicode_minus'] = False
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
