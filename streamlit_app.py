@@ -3,6 +3,23 @@ import pandas as pd
 import plotly.graph_objects as go
 
 st.set_page_config(page_title="연령대별 독서 행동 대시보드", layout="wide")
+
+# 연갈색 배경 적용
+st.markdown("""
+<style>
+.main { background-color: #F2EAD3 !important; }
+.stTabs [role="tablist"] { background-color: #E6D8B9 !important; border-radius: 8px; }
+.stTabs [role="tabpanel"] { background-color: #F9F4E7 !important; padding: 20px; border-radius: 10px; }
+.block-container { background-color: #F2EAD3 !important; }
+</style>
+""", unsafe_allow_html=True)
+
+st.title("📚 연령대별 독서 행동 대시보드")
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+
+st.set_page_config(page_title="연령대별 독서 행동 대시보드", layout="wide")
 st.title("📚 연령대별 독서 행동 대시보드")
 
 # ----------------------------------------------------------
