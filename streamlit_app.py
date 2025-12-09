@@ -1,145 +1,133 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="연령대별 독서 데이터 대시보드", layout="wide")
+# 페이지 설정
+st.set_page_config(page_title="연령대별 독서 데이터 분석", layout="wide")
 
-
-# ===========================
-# 자동 인코딩 CSV 로더
-# ===========================
-def load_csv_auto(path):
-    try:
-        return pd.read_csv(path, encoding="utf-8")
-    except UnicodeDecodeError:
-        return pd.read_csv(path, encoding="cp949")
-
-
-# ===========================
-# 데이터 로드
-# ===========================
-@st.cache_data
-def load_barrier():
-    return pd.read_excel("1.xlsx")
-
-@st.cache_data
-def load_year():
-    return load_csv_auto("2.csv")
-
-@st.cache_data
-def load_age_avg():
-    return load_csv_auto("3.csv")
-
-
-barrier = load_barrier()
-year_df = load_year()
-age_avg = load_age_avg()
-
-
-# ===========================
-# 헤더
-# ===========================
 st.title("📚 연령대별 독서 데이터 분석 대시보드")
-st.markdown("원하는 분석을 탭에서 선택해 확인하세요.")
 
-
-# ===========================
+# ---------------------------------------------------------
 # 탭 구성
-# ===========================
-tab1, tab2, tab3 = st.tabs([
-    "① 연령별 독서 장애요인",
-    "② 연도별 독서량 변화 (2.csv)",
-    "③ 연령대별 전체평균 분석 (3.csv)"
+# ---------------------------------------------------------
+tab1, tab2, tab3, tab4 = st.tabs([
+    "① 연령대별 전체 평균",
+    "② 평일·휴일 독서량",
+    "③ 독서 방해요인 도넛 차트",
+    "④ 여가시간 중 독서비율"
 ])
 
-
-# ============================================================
-# TAB 1 — 1.xlsx 연령별 독서 장애요인 파이 차트
-# ============================================================
+# ---------------------------------------------------------
+# ① 연령대별 전체 평균 선그래프 (2.csv)
+# ---------------------------------------------------------
 with tab1:
-    st.header("🚫 연령별 독서 장애요인")
+    st.header("연령대별 전체 평균 선그래프")
 
-    if "연령대" not in barrier.columns:
-        st.error("❌ 1.xlsx 안에 '연령대' 컬럼이 없습니다.")
-        st.stop()
+    df = pd.read_csv("2.csv")
+    age_col = "연령대"
+    value_col = "전체평균"
 
-    age_list = sorted(barrier["연령대"].unique())
-    selected_age = st.selectbox("연령대를 선택하세요", age_list, key="age1")
+    fig, ax = plt.subplots(figsize=(10, 5))
 
-    df_sub = barrier[barrier["연령대"] == selected_age]
+    ax.plot(df[age_col], df[value_col], linewidth=2)
 
-    melted = df_sub.melt(
-        id_vars=["연령대"],
-        var_name="장애요인",
-        value_name="비율"
-    )
+    # 20대 강조
+    highlight = df[df[age_col].astype(str).str.contains("20")]
+    ax.plot(highlight[age_col], highlight[value_col], linewidth=4)
+    ax.scatter(highlight[age_col], highlight[value_col], s=150)
 
-    fig = px.pie(
-        melted,
-        names="장애요인",
-        values="비율",
-        hole=0.4,
-        title=f"{selected_age}의 독서 장애요인 비율"
-    )
+    ax.set_xlabel("연령대")
+    ax.set_ylabel("전체 평균 독서량")
+    ax.grid(True)
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.pyplot(fig)
 
 
-
-# ============================================================
-# TAB 2 — 2.csv 연도별 독서량 변화 (Line Chart)
-# ============================================================
+# ---------------------------------------------------------
+# ② 평일·휴일 독서량 (8.csv)
+# ---------------------------------------------------------
 with tab2:
-    st.header("📈 연도별 독서량 변화 (전체평균 기준)")
+    st.header("평일·휴일 독서량 비교")
 
-    # 연령별만 가져오기
-    year_df = year_df[year_df["통계분류(1)"] == "연령별"].copy()
+    df = pd.read_csv("8.csv")
 
-    # 컬럼 정리
-    year_df = year_df.rename(columns={
-        "통계분류(2)": "연령대",
-        "2019 전체 평균": "2019",
-        "2021 전체 평균": "2021"
-    })
+    age_col = "연령대"
+    weekday_col = "평일"
+    weekend_col = "휴일"
 
-    tidy = year_df.melt(
-        id_vars=["연령대"],
-        value_vars=["2019", "2021"],
-        var_name="연도",
-        value_name="전체평균"
-    )
+    fig, ax = plt.subplots(figsize=(10, 5))
 
-    fig2 = px.line(
-        tidy,
-        x="연령대",
-        y="전체평균",
-        color="연도",
-        markers=True,
-        title="연령대별 전체평균 독서량 변화 (2019 vs 2021)"
-    )
+    ax.plot(df[age_col], df[weekday_col], label="평일", linewidth=2)
+    ax.plot(df[age_col], df[weekend_col], label="휴일", linewidth=2)
 
-    st.plotly_chart(fig2, use_container_width=True)
+    # 20대 강조
+    highlight = df[df[age_col].astype(str).str.contains("20")]
+    ax.plot(highlight[age_col], highlight[weekday_col], linewidth=4)
+    ax.scatter(highlight[age_col], highlight[weekday_col], s=120)
+    ax.plot(highlight[age_col], highlight[weekend_col], linewidth=4)
+    ax.scatter(highlight[age_col], highlight[weekend_col], s=120)
+
+    ax.set_xlabel("연령대")
+    ax.set_ylabel("독서량")
+    ax.legend()
+    ax.grid(True)
+
+    st.pyplot(fig)
 
 
-# ============================================================
-# TAB 3 — 3.csv 연령대별 전체평균 (Bar Chart)
-# ============================================================
+# ---------------------------------------------------------
+# ③ 독서 방해요인 도넛 차트 (7.csv)
+# ---------------------------------------------------------
 with tab3:
-    st.header("📊 연령대별 전체평균 독서량 분석 (3.csv)")
+    st.header("독서 방해 요인 도넛 차트")
 
-    if "연령대" not in age_avg.columns:
-        st.error("3.csv 안에 '연령대' 컬럼이 없습니다.")
-        st.stop()
+    df = pd.read_csv("7.csv")
 
-    if "전체평균" not in age_avg.columns:
-        st.error("3.csv 안에 '전체평균' 컬럼이 없습니다.")
-        st.stop()
+    age_col = df.columns[0]         # 첫 컬럼 = 연령대
+    factor_cols = df.columns[1:]    # 나머지 = 요인 9개
 
-    fig3 = px.bar(
-        age_avg,
-        x="연령대",
-        y="전체평균",
-        title="연령별 전체 평균 독서량"
+    selected_age = st.selectbox("연령대를 선택하세요", df[age_col].unique())
+
+    row = df[df[age_col] == selected_age][factor_cols].iloc[0]
+
+    labels = factor_cols
+    sizes = row.values
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+
+    wedges, texts, autotexts = ax.pie(
+        sizes,
+        labels=labels,
+        autopct="%.1f%%",
+        pctdistance=0.85,
+        wedgeprops=dict(width=0.4)
     )
 
-    st.plotly_chart(fig3, use_container_width=True)
+    # 도넛 구멍
+    centre_circle = plt.Circle((0, 0), 0.60, fc="white")
+    fig.gca().add_artist(centre_circle)
+
+    ax.set_title(f"{selected_age} 독서 방해 요인 비중")
+
+    st.pyplot(fig)
+
+
+# ---------------------------------------------------------
+# ④ 여가시간 중 독서비율 바그래프 (6.csv)
+# ---------------------------------------------------------
+with tab4:
+    st.header("여가시간 중 독서 비율")
+
+    df = pd.read_csv("6.csv")
+
+    age_col = "연령대"
+    value_col = "독서비율"
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(df[age_col], df[value_col])
+
+    ax.set_xlabel("연령대")
+    ax.set_ylabel("독서 비율 (%)")
+    ax.grid(axis="y")
+
+    st.pyplot(fig)
