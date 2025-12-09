@@ -2,65 +2,63 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
+# ----------------------------------------------------------
+# 페이지 설정 + 하늘색 테마 CSS
+# ----------------------------------------------------------
 st.set_page_config(page_title="연령대별 독서 행동 대시보드", layout="wide")
 
-# 연분홍(Pastel Pink) 배경 적용
 st.markdown("""
 <style>
-/* 전체 배경색 */
+/* 전체 배경 하늘색 */
 .main {
-    background-color: #FDEEEF !important;   /* 연한 분홍 */
+    background-color: #E7F4FF !important;
 }
 
-/* 중앙 컨테이너 */
+/* Streamlit 기본 컨테이너 */
 .block-container {
-    background-color: #FDEEEF !important;
+    background-color: #E7F4FF !important;
 }
 
-/* 탭 배경 */
+/* 탭 리스트 배경 */
 .stTabs [role="tablist"] {
-    background-color: #F8DDE5 !important;   /* 조금 더 진한 핑크 */
+    background-color: #D4EBFF !important;
     border-radius: 10px;
     padding: 6px;
 }
 
-/* 탭 내부 영역 */
+/* 탭 패널 내부 */
 .stTabs [role="tabpanel"] {
-    background-color: #FFF5F7 !important;   /* 거의 하얀-핑크 */
+    background-color: #F4FAFF !important;
     padding: 25px;
     border-radius: 12px;
 }
 
-/* Plotly 차트 배경 투명하게 */
+/* Plotly 차트 배경 제거 */
 .js-plotly-plot .plotly {
     background-color: transparent !important;
 }
 
-/* 글자 색상(검정 유지) */
+/* 텍스트 색 */
 html, body, [class*="css"] {
-    color: #333333 !important;
+    color: #004466 !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
-
-st.title("📚 연령대별 독서 행동 대시보드")
-import streamlit as st
-import pandas as pd
-import plotly.graph_objects as go
-
-st.set_page_config(page_title="연령대별 독서 행동 대시보드", layout="wide")
+# ----------------------------------------------------------
+# 대시보드 제목
+# ----------------------------------------------------------
 st.title("📚 연령대별 독서 행동 대시보드")
 
 # ----------------------------------------------------------
 # 탭 구성
+# ----------------------------------------------------------
 tab1, tab2, tab3, tab4 = st.tabs([
     "① 전체 평균 독서량",
     "② 평일·휴일 독서량",
     "③ 독서 방해 요인",
     "④ 여가시간 대비 독서 비율"
 ])
-# ----------------------------------------------------------
 
 
 # ==========================================================
@@ -77,13 +75,8 @@ with tab1:
     val_2021 = df_age["전체 평균.1"]
 
     fig = go.Figure()
-
-    fig.add_trace(go.Scatter(
-        x=ages, y=val_2019, mode="lines+markers", name="2019년"
-    ))
-    fig.add_trace(go.Scatter(
-        x=ages, y=val_2021, mode="lines+markers", name="2021년"
-    ))
+    fig.add_trace(go.Scatter(x=ages, y=val_2019, mode="lines+markers", name="2019년"))
+    fig.add_trace(go.Scatter(x=ages, y=val_2021, mode="lines+markers", name="2021년"))
 
     fig.update_layout(
         hovermode="x unified",
@@ -94,9 +87,8 @@ with tab1:
     st.plotly_chart(fig, use_container_width=True)
 
 
-
 # ==========================================================
-# ② 평일·휴일 독서량 — 실제 컬럼명 적용
+# ② 평일·휴일 독서량
 # ==========================================================
 with tab2:
     st.header("평일·휴일 독서량 (연령대별)")
@@ -105,26 +97,20 @@ with tab2:
     df_age = df[df["통계분류(1)"] == "연령별"]
 
     ages = df_age["통계분류(2)"]
-
     weekday_read = df_age["평일"]
     weekend_read = df_age["휴일"]
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=ages, y=weekday_read, mode="lines+markers", name="평일 독서량"
-    ))
-    fig.add_trace(go.Scatter(
-        x=ages, y=weekend_read, mode="lines+markers", name="휴일 독서량"
-    ))
+    fig.add_trace(go.Scatter(x=ages, y=weekday_read, mode="lines+markers", name="평일 독서량"))
+    fig.add_trace(go.Scatter(x=ages, y=weekend_read, mode="lines+markers", name="휴일 독서량"))
 
     fig.update_layout(
         hovermode="x unified",
         xaxis_title="연령대",
-        yaxis_title="독서량(분)"
+        yaxis_title="독서시간(분)"
     )
 
     st.plotly_chart(fig, use_container_width=True)
-
 
 
 # ==========================================================
@@ -145,19 +131,10 @@ with tab3:
     labels = factor_cols
     values = row[factor_cols].values
 
-    fig = go.Figure(data=[go.Pie(
-        labels=labels,
-        values=values,
-        hole=0.5
-    )])
-
-    fig.update_layout(
-        hovermode="closest",
-        title=f"{selected_age} 독서 방해 요인"
-    )
+    fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.5)])
+    fig.update_layout(title=f"{selected_age} 독서 방해 요인")
 
     st.plotly_chart(fig, use_container_width=True)
-
 
 
 # ==========================================================
@@ -170,17 +147,12 @@ with tab4:
     df_age = df[df["통계분류(1)"] == "연령별"]
 
     ages = df_age["통계분류(2)"]
-
     weekday_ratio = df_age["여가시간 중 독서시간이 차지하는 비율"]
     weekend_ratio = df_age["여가시간 중 독서시간이 차지하는 비율.1"]
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=ages, y=weekday_ratio, mode="lines+markers", name="평일 비율"
-    ))
-    fig.add_trace(go.Scatter(
-        x=ages, y=weekend_ratio, mode="lines+markers", name="주말 비율"
-    ))
+    fig.add_trace(go.Scatter(x=ages, y=weekday_ratio, mode="lines+markers", name="평일 비율"))
+    fig.add_trace(go.Scatter(x=ages, y=weekend_ratio, mode="lines+markers", name="주말 비율"))
 
     fig.update_layout(
         hovermode="x unified",
