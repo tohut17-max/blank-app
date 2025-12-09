@@ -4,15 +4,45 @@ import plotly.graph_objects as go
 
 st.set_page_config(page_title="연령대별 독서 행동 대시보드", layout="wide")
 
-# 연갈색 배경 적용
+# 연분홍(Pastel Pink) 배경 적용
 st.markdown("""
 <style>
-.main { background-color: #F2EAD3 !important; }
-.stTabs [role="tablist"] { background-color: #E6D8B9 !important; border-radius: 8px; }
-.stTabs [role="tabpanel"] { background-color: #F9F4E7 !important; padding: 20px; border-radius: 10px; }
-.block-container { background-color: #F2EAD3 !important; }
+/* 전체 배경색 */
+.main {
+    background-color: #FDEEEF !important;   /* 연한 분홍 */
+}
+
+/* 중앙 컨테이너 */
+.block-container {
+    background-color: #FDEEEF !important;
+}
+
+/* 탭 배경 */
+.stTabs [role="tablist"] {
+    background-color: #F8DDE5 !important;   /* 조금 더 진한 핑크 */
+    border-radius: 10px;
+    padding: 6px;
+}
+
+/* 탭 내부 영역 */
+.stTabs [role="tabpanel"] {
+    background-color: #FFF5F7 !important;   /* 거의 하얀-핑크 */
+    padding: 25px;
+    border-radius: 12px;
+}
+
+/* Plotly 차트 배경 투명하게 */
+.js-plotly-plot .plotly {
+    background-color: transparent !important;
+}
+
+/* 글자 색상(검정 유지) */
+html, body, [class*="css"] {
+    color: #333333 !important;
+}
 </style>
 """, unsafe_allow_html=True)
+
 
 st.title("📚 연령대별 독서 행동 대시보드")
 import streamlit as st
