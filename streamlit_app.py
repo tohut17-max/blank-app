@@ -1,4 +1,27 @@
 import streamlit as st
+import base64
+
+# Streamlit UI 전체에 NanumGothic 폰트 적용
+font_path = "NanumGothic.ttf"
+
+with open(font_path, "rb") as f:
+    font_data = f.read()
+    encoded_font = base64.b64encode(font_data).decode()
+
+font_css = f"""
+<style>
+@font-face {{
+    font-family: 'NanumGothic';
+    src: url(data:font/ttf;base64,{encoded_font}) format('truetype');
+}}
+html, body, div, span, input, textarea, select, button {{
+    font-family: 'NanumGothic' !important;
+}}
+</style>
+"""
+
+st.markdown(font_css, unsafe_allow_html=True)
+import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
