@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Reading Data Dashboard", layout="wide")
+st.set_page_config(page_title="Reading Dashboard by Age", layout="wide")
 st.title("📚 Reading Data Dashboard")
 
 # ----------------------------------------------------------
@@ -11,7 +11,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "Overall Reading Average",
     "Weekday & Weekend Reading",
     "Reading Barriers",
-    "Reading Ratio of Leisure Time"
+    "Reading Share of Leisure Time"
 ])
 # ----------------------------------------------------------
 
@@ -23,26 +23,25 @@ with tab1:
     st.header("Overall Reading Average by Age Group")
 
     df = pd.read_csv("2.csv", header=1)
+
     df_age = df[df["통계분류(1)"] == "연령별"]
 
     age_col = "통계분류(2)"
-    avg_2019 = "전체 평균"
-    avg_2021 = "전체 평균.1"
+    value_2019 = "전체 평균"
+    value_2021 = "전체 평균.1"
 
     fig, ax = plt.subplots(figsize=(10, 5))
 
-    # Plot lines
-    ax.plot(df_age[age_col], df_age[avg_2019], linewidth=2)
-    ax.plot(df_age[age_col], df_age[avg_2021], linewidth=2)
+    ax.plot(df_age[age_col], df_age[value_2019], linewidth=2)
+    ax.plot(df_age[age_col], df_age[value_2021], linewidth=2)
 
-    # Highlighting 20s
     highlight = df_age[df_age[age_col] == "19~29세"]
-    ax.scatter(highlight[age_col], highlight[avg_2019], s=150)
-    ax.scatter(highlight[age_col], highlight[avg_2021], s=150)
-    ax.plot(highlight[age_col], highlight[avg_2019], linewidth=4)
-    ax.plot(highlight[age_col], highlight[avg_2021], linewidth=4)
+    ax.scatter(highlight[age_col], highlight[value_2019], s=150)
+    ax.scatter(highlight[age_col], highlight[value_2021], s=150)
+    ax.plot(highlight[age_col], highlight[value_2019], linewidth=4)
+    ax.plot(highlight[age_col], highlight[value_2021], linewidth=4)
 
-    # Remove text
+    # Remove text elements
     ax.set_xticks([])
     ax.set_yticks([])
     ax.set_xlabel("")
@@ -54,28 +53,29 @@ with tab1:
 
 
 # ==========================================================
-# ② Weekday & Weekend Reading (8.csv)
+# ② Weekday / Weekend Reading (8.csv)
 # ==========================================================
 with tab2:
     st.header("Weekday & Weekend Reading by Age Group")
 
     df = pd.read_csv("8.csv", header=2)
+
     df_age = df[df["통계분류(1)"] == "연령별"]
 
     age_col = "통계분류(2)"
-    weekday = "평일"
-    weekend = "휴일"
+    weekday_col = "평일"
+    weekend_col = "휴일"
 
     fig, ax = plt.subplots(figsize=(10, 5))
 
-    ax.plot(df_age[age_col], df_age[weekday], linewidth=2)
-    ax.plot(df_age[age_col], df_age[weekend], linewidth=2)
+    ax.plot(df_age[age_col], df_age[weekday_col], linewidth=2)
+    ax.plot(df_age[age_col], df_age[weekend_col], linewidth=2)
 
     highlight = df_age[df_age[age_col] == "19~29세"]
-    ax.scatter(highlight[age_col], highlight[weekday], s=150)
-    ax.scatter(highlight[age_col], highlight[weekend], s=150)
-    ax.plot(highlight[age_col], highlight[weekday], linewidth=4)
-    ax.plot(highlight[age_col], highlight[weekend], linewidth=4)
+    ax.scatter(highlight[age_col], highlight[weekday_col], s=150)
+    ax.scatter(highlight[age_col], highlight[weekend_col], s=150)
+    ax.plot(highlight[age_col], highlight[weekday_col], linewidth=4)
+    ax.plot(highlight[age_col], highlight[weekend_col], linewidth=4)
 
     ax.set_xticks([])
     ax.set_yticks([])
@@ -88,12 +88,13 @@ with tab2:
 
 
 # ==========================================================
-# ③ Reading Barriers (7.csv) — Donut Chart
+# ③ Reading Barriers (Donut Chart, 7.csv)
 # ==========================================================
 with tab3:
     st.header("Reading Barriers (Donut Chart)")
 
     df = pd.read_csv("7.csv", header=1)
+
     df_age = df[df["통계분류(1)"] == "연령별"]
 
     age_options = df_age["통계분류(2)"].unique()
@@ -101,21 +102,20 @@ with tab3:
 
     row = df_age[df_age["통계분류(2)"] == selected_age].iloc[0]
 
-    # All barrier columns (exclude count)
-    barrier_cols = df.columns[3:]
-    sizes = row[barrier_cols].values
+    factor_cols = df.columns[3:]  # exclude 사례수
+    sizes = row[factor_cols].values
 
     fig, ax = plt.subplots(figsize=(8, 8))
 
     ax.pie(
         sizes,
-        labels=None,       # no text
-        autopct=None,      # no percentages
+        labels=None,  # Remove labels
+        autopct=None, 
         wedgeprops=dict(width=0.4)
     )
 
-    center = plt.Circle((0, 0), 0.60, fc="white")
-    fig.gca().add_artist(center)
+    centre = plt.Circle((0, 0), 0.60, fc="white")
+    fig.gca().add_artist(centre)
 
     ax.set_xticks([])
     ax.set_yticks([])
@@ -125,12 +125,13 @@ with tab3:
 
 
 # ==========================================================
-# ④ Ratio of Reading in Leisure Time (6.csv)
+# ④ Reading Share of Leisure Time (6.csv)
 # ==========================================================
 with tab4:
-    st.header("Reading Ratio of Leisure Time (Weekday / Weekend)")
+    st.header("Reading Share of Total Leisure Time")
 
     df = pd.read_csv("6.csv", header=2)
+
     df_age = df[df["통계분류(1)"] == "연령별"]
 
     age_col = "통계분류(2)"
